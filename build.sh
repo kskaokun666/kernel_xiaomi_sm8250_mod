@@ -75,30 +75,24 @@ fi
 
 KSU_ZIP_STR=NoKernelSU
 if [ "$2" == "ksu" ]; then
-    KSU_ENABLE=1
-    KSU_ZIP_STR=SukiSU-SUSFS
-else
-    KSU_ENABLE=0
+KSU_ENABLE=1 KSU_ZIP_STR=SukiSU-SUSFS else KSU_ENABLE=0
 fi
 
 
 echo "TARGET_DEVICE: $TARGET_DEVICE"
 
-if [ $KSU_ENABLE -eq 1 ]; then
-    echo "KSU is enabled"
-    curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-dev
-else
-    echo "KSU is disabled"
-fi
 
 
-echo "Cleaning..."
+echo "清理上次编译的环境..."
 
 rm -rf out/
 rm -rf anykernel/
 
-echo "Clone AnyKernel3 for packing kernel (repo: https://github.com/liyafe1997/AnyKernel3)"
+echo "下载要用的工具源码到内核!🤪"
 git clone https://github.com/liyafe1997/AnyKernel3 -b kona --single-branch --depth=1 anykernel
+if [ $KSU_ENABLE -eq 1 ]; then
+curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-dev
+fi
 
 # Add date to local version
 local_version_str="-perf"
@@ -108,7 +102,7 @@ sed -i "s/${local_version_str}/${local_version_date_str}/g" arch/arm64/configs/$
 
 # ------------- Building for AOSP -------------
 
-echo "Building for AOSP......"
+echo "开始编译 类原生系统......"
 make $MAKE_ARGS ${TARGET_DEVICE}_defconfig
 
 if [ $KSU_ENABLE -eq 1 ]; then
@@ -176,7 +170,7 @@ mv $ZIP_FILENAME ../
 cd ..
 
 
-echo "Build for AOSP finished."
+echo "编译完成 类原生系统."
 
 # ------------- End of Building for AOSP -------------
 #  If you don't need AOSP you can comment out the above block [Building for AOSP]
@@ -185,7 +179,7 @@ echo "Build for AOSP finished."
 # ------------- Building for MIUI -------------
 
 
-echo "Clearning [out/] and build for MIUI....."
+echo "清理环境 [out/] 和 编译 MIUI/HyperOS系统....."
 rm -rf out/
 
 dts_source=arch/arm64/boot/dts/vendor/qcom
