@@ -10,39 +10,37 @@ GIT_COMMIT_ID=$(git rev-parse --short=8 HEAD)
 TARGET_DEVICE=$1
 
 if [ -z "$1" ]; then
-    echo "Error: No argument provided, please specific a target device." 
-    echo "If you need KernelSU, please add [ksu] as the second arg."
-    echo "Examples:"
-    echo "Build for lmi(K30 Pro/POCO F2 Pro) without KernelSU:"
-    echo "    bash build.sh lmi"
-    echo "Build for umi(Mi10) with KernelSU:"
-    echo "    bash build.sh umi ksu"
+    echo "错误: 格式填错啦." 
+    echo "这样填到差不多😡:"
+    echo "编译 小米平板6(pipa) 不带KernSU:"
+    echo "    bash build.sh pipa"
+    echo "编译 小米平板6(pipa) 带KernelSU:"
+    echo "    bash build.sh pipa ksu"
     exit 1
 fi
 
 
 
 if [ ! -d $TOOLCHAIN_PATH ]; then
-    echo "TOOLCHAIN_PATH [$TOOLCHAIN_PATH] does not exist."
-    echo "Please ensure the toolchain is there, or change TOOLCHAIN_PATH in the script to your toolchain path."
+    echo "$TOOLCHAIN_PATH 地址不存在你个笨猪😡😡😡"
     exit 1
 fi
 
-echo "TOOLCHAIN_PATH: [$TOOLCHAIN_PATH]"
+echo "clang地址: [$TOOLCHAIN_PATH]"
 export PATH="$TOOLCHAIN_PATH:$PATH"
 
 if ! command -v aarch64-linux-gnu-ld >/dev/null 2>&1; then
-    echo "[aarch64-linux-gnu-ld] does not exist, please check your environment."
+    echo "[aarch64-linux-gnu-ld] 地址不存在你个笨猪😡😡😡"
     exit 1
 fi
 
 if ! command -v arm-linux-gnueabi-ld >/dev/null 2>&1; then
-    echo "[arm-linux-gnueabi-ld] does not exist, please check your environment."
+    echo "[arm-linux-gnueabi-ld] 地址不存在你个笨猪😡😡😡"
     exit 1
 fi
 
 if ! command -v clang >/dev/null 2>&1; then
-    echo "[clang] does not exist, please check your environment."
+    echo "[clang] 地址不存在你个笨猪😡😡😡"
     exit 1
 fi
 
@@ -69,17 +67,10 @@ if [ "$1" == "continue" ]; then
 fi
 
 if [ ! -f "arch/arm64/configs/${TARGET_DEVICE}_defconfig" ]; then
-    echo "No target device [${TARGET_DEVICE}] found."
-    echo "Avaliable defconfigs, please choose one target from below down:"
+    echo "没有这个代号 [${TARGET_DEVICE}] ."
     ls arch/arm64/configs/*_defconfig
     exit 1
 fi
-
-
-# Check clang is existing.
-echo "[clang --version]:"
-clang --version
-
 
 
 KSU_ZIP_STR=NoKernelSU
@@ -95,7 +86,7 @@ echo "TARGET_DEVICE: $TARGET_DEVICE"
 
 if [ $KSU_ENABLE -eq 1 ]; then
     echo "KSU is enabled"
-    curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-stable
+    curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-dev
 else
     echo "KSU is disabled"
 fi
@@ -138,7 +129,7 @@ if [ $KSU_ENABLE -eq 1 ]; then
     -e KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG \
     -e KSU_SUSFS_OPEN_REDIRECT \
     -e KSU_SUSFS_SUS_SU \
-    -e KPM
+    -e KPM 
 else
     scripts/config --file out/.config -d KSU
 fi
@@ -276,7 +267,7 @@ if [ $KSU_ENABLE -eq 1 ]; then
     -e KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG \
     -e KSU_SUSFS_OPEN_REDIRECT \
     -e KSU_SUSFS_SUS_SU \
-    -e KPM
+    -e KPM 
 else
     scripts/config --file out/.config -d KSU
 fi
