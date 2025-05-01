@@ -22,7 +22,7 @@ fi
 
 
 if [ ! -d $TOOLCHAIN_PATH ]; then
-    echo "$TOOLCHAIN_PATH 地址不存在你个笨猪😡😡😡"
+    echo "[$TOOLCHAIN_PATH] 地址不存在你个笨猪😡😡😡"
     exit 1
 fi
 
@@ -78,6 +78,13 @@ if [ "$2" == "ksu" ]; then
 KSU_ENABLE=1 KSU_ZIP_STR=SukiSU-SUSFS else KSU_ENABLE=0
 fi
 
+if [ $KSU_ENABLE -eq 1 ]; then
+    echo "KSU is enabled"
+    curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-dev
+else
+    echo "KSU is disabled"
+fi
+
 
 echo "TARGET_DEVICE: $TARGET_DEVICE"
 
@@ -90,9 +97,6 @@ rm -rf anykernel/
 
 echo "下载要用的工具源码到内核!🤪"
 git clone https://github.com/liyafe1997/AnyKernel3 -b kona --single-branch --depth=1 anykernel
-if [ $KSU_ENABLE -eq 1 ]; then
-curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-dev
-fi
 
 # Add date to local version
 local_version_str="-perf"
@@ -144,17 +148,6 @@ find out/arch/arm64/boot/dts -name '*.dtb' -exec cat {} + >out/arch/arm64/boot/d
 rm -rf anykernel/kernels/
 
 mkdir -p anykernel/kernels/
-
-# Patch for SukiSU KPM support. 
-if [ $KSU_ENABLE -eq 1 ]; then
-    cd out/arch/arm64/boot/
-    wget https://github.com/ShirkNeko/SukiSU_KernelPatch_patch/releases/download/0.11-beta/patch_linux
-    chmod +x patch_linux
-    ./patch_linux
-    rm Image
-    mv oImage Image
-    cd -
-fi
 
 cp out/arch/arm64/boot/Image anykernel/kernels/
 cp out/arch/arm64/boot/dtb anykernel/kernels/
@@ -317,17 +310,6 @@ mv .dts.bak ${dts_source}
 
 rm -rf anykernel/kernels/
 mkdir -p anykernel/kernels/
-
-# Patch for SukiSU KPM support. 
-if [ $KSU_ENABLE -eq 1 ]; then
-    cd out/arch/arm64/boot/
-    wget https://github.com/ShirkNeko/SukiSU_KernelPatch_patch/releases/download/0.11-beta/patch_linux
-    chmod +x patch_linux
-    ./patch_linux
-    rm Image
-    mv oImage Image
-    cd -
-fi
 
 cp out/arch/arm64/boot/Image anykernel/kernels/
 cp out/arch/arm64/boot/dtb anykernel/kernels/
